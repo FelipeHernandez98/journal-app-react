@@ -3,12 +3,15 @@ import { Link as RouterLink } from "react-router-dom";
 import { Button, Grid, Link, TextField, Typography } from "@mui/material"
 import { AuthLayout } from "../layout/AuthLayout";
 import { useForm } from "../../hooks/useForm";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { startCreatingUserWithEmailAndPassword } from "../../store/auth/thunks";
 
 
 const formData = {
-  email: 'afelipehernandezdev@gmail.com ',
-  password: '123456',
-  displayName: 'Felipe Henrnadez'
+  email: '',
+  password: '',
+  displayName: ''
 }
 
 const formValidations = {
@@ -19,12 +22,20 @@ const formValidations = {
 
 export const RegisterPage = () => {
 
+  const dispatch = useDispatch();
+
+  const [ formSubmitted, setFormSubmitted ] = useState(false);
+
   const {formState, displayName, email, password, onInputChange, 
-          formStateValid, displayNameValid, emailValid, passwordValid} = useForm(formData, formValidations); 
+          formStateValid, displayNameValid, emailValid, passwordValid, isFormValid } = useForm(formData, formValidations); 
 
   const onSubmit = ( event )=>{
     event.preventDefault();
-    console.log(formState)
+    setFormSubmitted(true);
+
+    if(!isFormValid) return;
+    
+    dispatch( startCreatingUserWithEmailAndPassword(formState) );
   }
 
   return (
@@ -36,12 +47,12 @@ export const RegisterPage = () => {
             <TextField
               label='Nombre'
               type='text'
-              placeholder="Felipe Hernandez"
+              placeholder="Nombre completo"
               fullWidth
               name="displayName"
               value={ displayName }
               onChange = { onInputChange }
-              error={ !displayNameValid }
+              error={ !!displayNameValid && formSubmitted}
               helperText={ displayNameValid }
             />
           </Grid>
@@ -55,6 +66,8 @@ export const RegisterPage = () => {
               name="email"
               value={ email }
               onChange = { onInputChange }
+              error={ !!emailValid && formSubmitted}
+              helperText={ emailValid }
             />
           </Grid>
 
@@ -62,11 +75,13 @@ export const RegisterPage = () => {
             <TextField
               label='Password'
               type='password'
-              placeholder="Secret Pass"
+              placeholder="Contraseña secreta"
               fullWidth
               name="password"
               value={ password }
               onChange = { onInputChange }
+              error={ !!passwordValid && formSubmitted}
+              helperText={ passwordValid }
             />
           </Grid>
 
