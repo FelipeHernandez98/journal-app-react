@@ -1,16 +1,16 @@
 import { Google } from "@mui/icons-material"
 import { Link as RouterLink } from "react-router-dom";
-import { Button, Grid, Link, TextField, Typography } from "@mui/material"
+import { Alert, Button, Grid, Link, TextField, Typography } from "@mui/material"
 import { AuthLayout } from "../layout/AuthLayout";
 import { useForm } from "../../hooks/useForm";
 import { useDispatch, useSelector } from "react-redux"
-import { checkingAuthentication, startGoogleSignin } from "../../store/auth/thunks";
+import { checkingAuthentication, startGoogleSignin, startLoginWithEmailPassword } from "../../store/auth/thunks";
 import { useMemo } from "react";
 
 
 export const LoginPage = () => {
 
-  const { status } = useSelector(state => state.auth)
+  const { status, errorMessage } = useSelector(state => state.auth)
   const dispatch = useDispatch()
 
   const { email, password, onInputChange } = useForm({
@@ -25,7 +25,7 @@ export const LoginPage = () => {
 
     console.log({ email, password })
 
-    dispatch(checkingAuthentication(email, password));
+    dispatch(startLoginWithEmailPassword({ email, password }));
   }
 
   const onGoogleSigIn = () => {
@@ -63,9 +63,20 @@ export const LoginPage = () => {
           </Grid>
 
           <Grid container spacing={2} sx={{ mb: 2, mt: 1 }}>
+
+            <Grid
+              item
+              xs={12}
+              display={!!errorMessage ? '' : 'none'}
+            >
+              <Alert severity="error">
+                {errorMessage}
+              </Alert>
+            </Grid>
+
             <Grid item xs={12} sm={6}>
               <Button
-                disabled={ isAuthenticating }
+                disabled={isAuthenticating}
                 type="submit"
                 variant="contained"
                 fullWidth>
@@ -75,7 +86,7 @@ export const LoginPage = () => {
 
             <Grid item xs={12} sm={6}>
               <Button
-                disabled={ isAuthenticating }
+                disabled={isAuthenticating}
                 onClick={onGoogleSigIn}
                 variant="contained"
                 fullWidth>
