@@ -24,10 +24,13 @@ export const startGoogleSignin = ( email, password ) =>{
 export const startCreatingUserWithEmailAndPassword = ({ email, password, displayName })=>{
 
     return async( dispathc ) =>{
+        
         dispathc( checkingCredentials() );
 
-        const resp = await registerUserWithEmailPassword({ email, password, displayName });
+        const {ok, uid, photoURL} = await registerUserWithEmailPassword({ email, password, displayName });
 
-        console.log(resp)
+        if(!ok) return dispathc( logout({errorMessage}))
+
+        dispathc( login({ uid, displayName, email, photoURL }));
     } 
 }
