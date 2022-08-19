@@ -9,7 +9,7 @@ import { NothingSelectedView } from "../views/NothingSelectedView"
 
 export const JournalPage = () => {
 
-  const { isSaving } = useSelector( state => state.journal )
+  const { isSaving, active } = useSelector( state => state.journal )
 
   const dispathc = useDispatch();
 
@@ -20,8 +20,13 @@ export const JournalPage = () => {
   return (
 
     <JournalLayout>
-        <NothingSelectedView />
-        {/* <NoteView /> */}
+
+        {
+          (!!active)
+          ? <NoteView /> 
+          : <NothingSelectedView />
+        }
+        
 
         <IconButton
           disabled={ isSaving }
